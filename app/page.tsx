@@ -12,10 +12,28 @@ export default function Home() {
   const [email, setEmail] = useState("")
   const [isFormSubmitted, setIsFormSubmitted] = useState(false)
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (name && email) {
-      setIsFormSubmitted(true)
+      try {
+        const response = await fetch("/api/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email }),
+        })
+
+        if (response.ok) {
+          setIsFormSubmitted(true)
+        } else {
+          console.error("Failed to submit form")
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error)
+        // Still show success to user even if API fails
+        setIsFormSubmitted(true)
+      }
     }
   }
 
